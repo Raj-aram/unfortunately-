@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Manage Appointments{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1 class="mb-1" style="font-size:1.5rem;"><i class="bi bi-calendar2-week me-2"></i>Manage Appointments</h1>
+  <p>Review client booking requests and accept or reject them.</p>
+</div>
+
+{% if appointments %}
+<!-- Desktop table -->
+<div class="card d-none d-md-block">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Date &amp; Time</th>
+          <th>Mode</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ a.client_name }}</div>
+            <small class="text-muted">{{ a.client_email }}</small>
+          </td>
+          <td>
+            <div>{{ a.date }}</div>
+            <small class="text-muted">{{ a.time }}</small>
+          </td>
+          <td>
+            <span class="status-badge {{ 'badge-online' if a.mode == 'Online' else 'badge-offline' }}">
+              <i class="bi {{ 'bi-camera-video' if a.mode == 'Online' else 'bi-building2' }} me-1"></i>{{ a.mode }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge badge-{{ a.status.lower() }}">{{ a.status }}</span>
+          </td>
+          <td>
+            <span class="status-badge {{ 'badge-paid' if a.payment_status == 'Paid' else 'badge-pending' }}">
+              {{ a.payment_status }}
+            </span>
+          </td>
+          <td>
+            <div class="d-flex gap-1 flex-wrap">
+              {% if a.status == 'Pending' %}
+              <form method="POST" action="{{ url_for('respond_appointment', appt_id=a.id) }}" class="d-inline">
+                <input type="hidden" name="action" value="Accepted">
+                <button type="submit" class="btn btn-sm btn-success"
+                        onclick="return confirm('Accept this appointment?')">
+                  <i class="bi bi-check-lg"></i> Accept
+                </button>
+              </form>
+              <form method="POST" action="{{ url_for('respond_appointment', appt_id=a.id) }}" class="d-inline">
+                <input type="hidden" name="action" value="Rejected">
+                <button type="submit" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Reject this appointment?')">
+                  <i class="bi bi-x-lg"></i> Reject
+                </button>
+              </form>
+              {% elif a.status == 'Accepted' and a.mode == 'Online' %}
+              <a href="{{ url_for('chat_room', appt_id=a.id) }}" class="btn btn-sm btn-primary-custom">
+                <i class="bi bi-chat-dots me-1"></i>Chat
+              </a>
+              {% else %}
+              <span class="text-muted" style="font-size:.82rem;">–</span>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Mobile cards -->
+<div class="d-md-none">
+  {% for a in appointments %}
+  <div class="card mb-3 p-3">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+      <div>
+        <div class="fw-semibold">{{ a.client_name }}</div>
+        <small class="text-muted">{{ a.client_email }}</small>
+      </div>
+      <span class="status-badge badge-{{ a.status.lower() }}">{{ a.status }}</span>
+    </div>
+    <div class="d-flex gap-3 mb-2" style="font-size:.83rem;color:var(--muted);">
+      <span><i class="bi bi-calendar3 me-1"></i>{{ a.date }}</span>
+      <span><i class="bi bi-clock me-1"></i>{{ a.time }}</span>
+    </div>
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+      <span class="status-badge {{ 'badge-online' if a.mode == 'Online' else 'badge-offline' }}">{{ a.mode }}</span>
+      <span class="status-badge {{ 'badge-paid' if a.payment_status == 'Paid' else 'badge-pending' }}">{{ a.payment_status }}</span>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      {% if a.status == 'Pending' %}
+      <form method="POST" action="{{ url_for('respond_appointment', appt_id=a.id) }}" class="flex-grow-1">
+        <input type="hidden" name="action" value="Accepted">
+        <button class="btn btn-sm btn-success w-100" onclick="return confirm('Accept?')">
+          <i class="bi bi-check-lg me-1"></i>Accept
+        </button>
+      </form>
+      <form method="POST" action="{{ url_for('respond_appointment', appt_id=a.id) }}" class="flex-grow-1">
+        <input type="hidden" name="action" value="Rejected">
+        <button class="btn btn-sm btn-danger w-100" onclick="return confirm('Reject?')">
+          <i class="bi bi-x-lg me-1"></i>Reject
+        </button>
+      </form>
+      {% elif a.status == 'Accepted' and a.mode == 'Online' %}
+      <a href="{{ url_for('chat_room', appt_id=a.id) }}" class="btn btn-sm btn-primary-custom flex-grow-1">
+        <i class="bi bi-chat-dots me-1"></i>Chat Room
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card text-center p-5">
+  <i class="bi bi-calendar-x fs-1 text-muted mb-3"></i>
+  <h5>No appointment requests yet</h5>
+  <p class="text-muted">Complete your profile so clients can discover and book you.</p>
+  <a href="{{ url_for('advocate_profile_setup') }}" class="btn btn-primary-custom mx-auto" style="width:fit-content;">
+    <i class="bi bi-person-badge me-1"></i> Setup Profile
+  </a>
+</div>
+{% endif %}
+{% endblock %}

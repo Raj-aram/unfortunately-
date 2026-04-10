@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{ adv.name }} – Profile{% endblock %}
+
+{% block content %}
+<div class="py-3">
+  <a href="{{ url_for('client_search') }}" class="text-muted text-decoration-none d-inline-flex align-items-center gap-1 mb-3" style="font-size:.85rem;">
+    <i class="bi bi-arrow-left"></i> Back to Search
+  </a>
+
+  <div class="row g-4">
+    <!-- Left: Advocate info -->
+    <div class="col-lg-4">
+      <div class="card p-4 text-center">
+        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
+             style="width:80px;height:80px;background:linear-gradient(135deg,var(--primary),var(--accent));font-size:2rem;font-weight:700;color:#fff;">
+          {{ adv.name[0].upper() }}
+        </div>
+        <h4 class="fw-bold mb-0">{{ adv.name }}</h4>
+        <p class="text-muted mb-2" style="font-size:.85rem;">{{ adv.email }}</p>
+
+        <div class="divider"></div>
+
+        <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+          <i class="bi bi-geo-alt-fill text-gold"></i>
+          <span>{{ adv.location or 'Location not specified' }}</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-currency-rupee text-gold fs-5"></i>
+          <span class="fw-bold fs-5 text-navy">₹{{ '%.0f'|format(adv.fees) }}</span>
+          <span class="text-muted" style="font-size:.8rem;">/ consultation</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <a href="{{ url_for('book_appointment', adv_id=adv.id) }}"
+           class="btn btn-gold w-100">
+          <i class="bi bi-calendar-plus me-1"></i> Book Appointment
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Details -->
+    <div class="col-lg-8">
+      <!-- Courts -->
+      <div class="card p-4 mb-3">
+        <div class="section-title"><i class="bi bi-bank2 me-2"></i>Courts of Practice</div>
+        {% if adv.court_level %}
+          {% for c in adv.court_level.split(',') %}
+            <span class="slot-pill">
+              {% if 'Supreme' in c %}<i class="bi bi-star-fill me-1 text-gold"></i>{% endif %}
+              {% if 'High' in c %}<i class="bi bi-building me-1"></i>{% endif %}
+              {% if 'District' in c %}<i class="bi bi-geo me-1"></i>{% endif %}
+              {{ c.strip() }} Court
+            </span>
+          {% endfor %}
+        {% else %}
+          <span class="text-muted">Not specified</span>
+        {% endif %}
+      </div>
+
+      <!-- Bio -->
+      <div class="card p-4 mb-3">
+        <div class="section-title"><i class="bi bi-person-lines-fill me-2"></i>About</div>
+        {% if adv.bio %}
+          <p class="mb-0" style="line-height:1.7;color:var(--text);">{{ adv.bio }}</p>
+        {% else %}
+          <span class="text-muted">No bio provided yet.</span>
+        {% endif %}
+      </div>
+
+      <!-- Time Slots -->
+      <div class="card p-4">
+        <div class="section-title"><i class="bi bi-clock me-2"></i>Available Time Slots</div>
+        {% if slots %}
+          <div class="d-flex flex-wrap gap-1">
+            {% for slot in slots %}
+              <span class="slot-pill"><i class="bi bi-clock-fill me-1"></i>{{ slot }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <span class="text-muted">No time slots listed yet.</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

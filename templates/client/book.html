@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment – {{ adv.name }}{% endblock %}
+
+{% block content %}
+<div class="py-3">
+  <a href="{{ url_for('advocate_profile', adv_id=adv.id) }}"
+     class="text-muted text-decoration-none d-inline-flex align-items-center gap-1 mb-3" style="font-size:.85rem;">
+    <i class="bi bi-arrow-left"></i> Back to Profile
+  </a>
+
+  <div class="row g-4 justify-content-center">
+    <div class="col-lg-7">
+      <div class="card p-4">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+               style="width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--accent));font-size:1.4rem;font-weight:700;color:#fff;">
+            {{ adv.name[0].upper() }}
+          </div>
+          <div>
+            <div class="fw-bold fs-5">Book with {{ adv.name }}</div>
+            <div class="text-muted" style="font-size:.85rem;">
+              <i class="bi bi-currency-rupee"></i>{{ '%.0f'|format(adv.fees) }} consultation fee
+            </div>
+          </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('book_appointment', adv_id=adv.id) }}">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="date">Preferred Date</label>
+            <input type="date" class="form-control" id="date" name="date"
+                   min="{{ '' }}" required/>
+            <div class="form-text">Select a future date for your consultation.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="time">Preferred Time Slot</label>
+            {% if slots %}
+            <select class="form-select" id="time" name="time" required>
+              <option value="" disabled selected>-- Select a slot --</option>
+              {% for slot in slots %}
+              <option value="{{ slot }}">{{ slot }}</option>
+              {% endfor %}
+            </select>
+            {% else %}
+            <input type="time" class="form-control" id="time" name="time" required/>
+            <div class="form-text">Advocate hasn't listed slots; enter any preferred time.</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Meeting Mode</label>
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="role-btn d-block">
+                  <input type="radio" name="mode" value="Online" checked>
+                  <div class="role-box">
+                    <i class="bi bi-camera-video-fill fs-4 d-block mb-1"></i>
+                    <span class="fw-semibold">Online</span><br>
+                    <small class="text-muted">Video / Chat session</small>
+                  </div>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="role-btn d-block">
+                  <input type="radio" name="mode" value="Offline">
+                  <div class="role-box">
+                    <i class="bi bi-building2 fs-4 d-block mb-1"></i>
+                    <span class="fw-semibold">Offline</span><br>
+                    <small class="text-muted">In-person at chamber</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning py-2" style="font-size:.83rem;">
+            <i class="bi bi-info-circle me-1"></i>
+            Your appointment will be in <strong>Pending</strong> state until the advocate accepts it.
+            Payment can be made after acceptance.
+          </div>
+
+          <button type="submit" class="btn btn-gold w-100 py-2">
+            <i class="bi bi-calendar-check me-1"></i> Confirm Booking
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* Set min date to today */
+  document.getElementById('date').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

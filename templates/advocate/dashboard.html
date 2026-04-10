@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Advocate Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="d-flex align-items-center gap-3 flex-wrap">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:56px;height:56px;background:rgba(255,255,255,.15);">
+      <i class="bi bi-briefcase-fill fs-3 text-white"></i>
+    </div>
+    <div>
+      <h1 class="mb-0" style="font-size:1.5rem;">Welcome, Adv. {{ session.name.split()[0] }}!</h1>
+      <p class="mb-0 mt-1">Manage your appointments and keep your profile updated.</p>
+    </div>
+    <a href="{{ url_for('manage_appointments') }}" class="btn btn-gold ms-auto">
+      <i class="bi bi-calendar2-week me-1"></i> Manage Appointments
+    </a>
+  </div>
+</div>
+
+{% if not profile or not profile.bio %}
+<div class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
+  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+  <div>
+    Your profile is incomplete. <a href="{{ url_for('advocate_profile_setup') }}" class="fw-semibold alert-link">Complete your profile</a>
+    so clients can find and book you.
+  </div>
+</div>
+{% endif %}
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="card stat-card h-100">
+      <div class="stat-num">{{ pending }}</div>
+      <div class="stat-label"><i class="bi bi-hourglass-split me-1"></i>Pending</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card stat-card h-100" style="border-color:#1a7a4a !important;">
+      <div class="stat-num">{{ accepted }}</div>
+      <div class="stat-label"><i class="bi bi-check-circle me-1"></i>Accepted</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card stat-card h-100" style="border-color:var(--primary-lt) !important;">
+      <div class="stat-num">{{ total }}</div>
+      <div class="stat-label"><i class="bi bi-folder-fill me-1"></i>Total</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="section-title">Quick Actions</div>
+<div class="row g-3">
+  <div class="col-sm-6 col-lg-4">
+    <a href="{{ url_for('manage_appointments') }}" class="card p-3 text-decoration-none h-100 d-flex flex-row align-items-center gap-3">
+      <div style="width:46px;height:46px;border-radius:12px;background:#fff3e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-calendar2-check fs-5" style="color:#e65100;"></i>
+      </div>
+      <div><div class="fw-semibold">Appointments</div><small class="text-muted">Accept or reject requests</small></div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-lg-4">
+    <a href="{{ url_for('advocate_profile_setup') }}" class="card p-3 text-decoration-none h-100 d-flex flex-row align-items-center gap-3">
+      <div style="width:46px;height:46px;border-radius:12px;background:#e8edff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-person-badge fs-5 text-navy"></i>
+      </div>
+      <div><div class="fw-semibold">My Profile</div><small class="text-muted">Update fees, bio &amp; slots</small></div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-lg-4">
+    <a href="{{ url_for('help_page') }}" class="card p-3 text-decoration-none h-100 d-flex flex-row align-items-center gap-3">
+      <div style="width:46px;height:46px;border-radius:12px;background:#e8f5e9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-question-circle fs-5" style="color:#1a7a4a;"></i>
+      </div>
+      <div><div class="fw-semibold">Help Centre</div><small class="text-muted">FAQs and guides</small></div>
+    </a>
+  </div>
+</div>
+{% endblock %}

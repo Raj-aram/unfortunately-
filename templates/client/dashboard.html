@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="page-hero-green">
+  <div class="d-flex align-items-center gap-3 flex-wrap">
+    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:56px;height:56px;background:rgba(255,255,255,.18);">
+      <i class="bi bi-person-fill fs-3 text-white"></i>
+    </div>
+    <div>
+      <h1 class="mb-0" style="font-size:1.5rem;">Good day, {{ session.name.split()[0] }}!</h1>
+      <p class="mb-0 mt-1">Your dedicated legal consultation portal.</p>
+    </div>
+    <a href="{{ url_for('my_appointments') }}" class="btn btn-light ms-auto fw-semibold">
+      <i class="bi bi-calendar-check me-1"></i> My Appointments
+    </a>
+  </div>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="card stat-card h-100" style="border-color:var(--green) !important;">
+      <div class="stat-num">{{ upcoming }}</div>
+      <div class="stat-label"><i class="bi bi-calendar-check me-1"></i>Upcoming</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card stat-card h-100" style="border-color:#f59e0b !important;">
+      <div class="stat-num">{{ pending }}</div>
+      <div class="stat-label"><i class="bi bi-hourglass-split me-1"></i>Pending</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card stat-card h-100">
+      <div class="stat-num">{{ total }}</div>
+      <div class="stat-label"><i class="bi bi-folder2-open me-1"></i>Total Bookings</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Advocate Profile Card ── -->
+<div class="section-title"><i class="bi bi-person-badge me-2"></i>Your Dedicated Advocate</div>
+<div class="advocate-profile-card p-4 mb-4">
+  <div class="row g-0 align-items-center">
+
+    <!-- Avatar + identity -->
+    <div class="col-lg-3 text-center border-end-lg pb-4 pb-lg-0 pe-lg-4">
+      <div class="advocate-avatar">G</div>
+      <div class="advocate-name">Gaurav Raj Bhagat</div>
+      <div class="advocate-designation mt-1">Advocate, Supreme Court of India</div>
+      <!-- Verified badge -->
+      <span class="detail-pill mt-3">
+        <i class="bi bi-patch-check-fill" style="color:var(--green);"></i> Verified Advocate
+      </span>
+    </div>
+
+    <!-- Details -->
+    <div class="col-lg-9 ps-lg-4 pt-4 pt-lg-0">
+
+      <!-- Key details pills -->
+      <div class="d-flex flex-wrap gap-1 mb-3">
+        <span class="detail-pill">
+          <i class="bi bi-geo-alt-fill"></i> 123, Law Avenue, Delhi
+        </span>
+        <span class="detail-pill">
+          <i class="bi bi-currency-rupee"></i> Rs. 1,500 / consultation
+        </span>
+        <span class="detail-pill">
+          <i class="bi bi-calendar-x-fill"></i> Weekly Off: Sunday
+        </span>
+        <span class="detail-pill">
+          <i class="bi bi-bank2"></i> Supreme Court of India
+        </span>
+      </div>
+
+      <hr class="profile-divider"/>
+
+      <!-- Time Slots -->
+      <div class="fw-semibold mb-2" style="color:var(--primary);font-size:.88rem;">
+        <i class="bi bi-clock me-1"></i> Available Time Slots
+      </div>
+      <div class="mb-1">
+        <small class="text-muted fw-semibold text-uppercase" style="font-size:.7rem;letter-spacing:.6px;">Morning</small><br/>
+        <span class="slot-pill-morning"><i class="bi bi-sunrise-fill"></i> 09:00 AM – 11:00 AM</span>
+        <span class="slot-pill-morning"><i class="bi bi-sunrise-fill"></i> 11:00 AM – 01:00 PM</span>
+      </div>
+      <div class="mb-1 mt-2">
+        <small class="text-muted fw-semibold text-uppercase" style="font-size:.7rem;letter-spacing:.6px;">Afternoon</small><br/>
+        <span class="slot-pill-afternoon"><i class="bi bi-sun-fill"></i> 02:00 PM – 04:00 PM</span>
+      </div>
+      <div class="mb-3 mt-2">
+        <small class="text-muted fw-semibold text-uppercase" style="font-size:.7rem;letter-spacing:.6px;">Evening</small><br/>
+        <span class="slot-pill-evening"><i class="bi bi-moon-stars-fill"></i> 05:00 PM – 07:00 PM</span>
+      </div>
+
+      <hr class="profile-divider"/>
+
+      <!-- CTA -->
+      <a href="{{ url_for('book_appointment', adv_id=adv_id) }}" class="btn btn-green-book w-100">
+        <i class="bi bi-calendar-plus me-2"></i> Book First Appointment
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Quick links -->
+<div class="section-title">Quick Actions</div>
+<div class="row g-3">
+  <div class="col-sm-6 col-lg-4">
+    <a href="{{ url_for('book_appointment', adv_id=adv_id) }}" class="card p-3 text-decoration-none h-100 d-flex flex-row align-items-center gap-3">
+      <div style="width:46px;height:46px;border-radius:12px;background:var(--green-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-calendar-plus fs-5" style="color:var(--green);"></i>
+      </div>
+      <div><div class="fw-semibold">Book Appointment</div><small class="text-muted">Schedule a consultation</small></div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-lg-4">
+    <a href="{{ url_for('my_appointments') }}" class="card p-3 text-decoration-none h-100 d-flex flex-row align-items-center gap-3">
+      <div style="width:46px;height:46px;border-radius:12px;background:#fff3e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-calendar2-week fs-5" style="color:#e65100;"></i>
+      </div>
+      <div><div class="fw-semibold">My Appointments</div><small class="text-muted">View or pay for bookings</small></div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-lg-4">
+    <a href="{{ url_for('help_page') }}" class="card p-3 text-decoration-none h-100 d-flex flex-row align-items-center gap-3">
+      <div style="width:46px;height:46px;border-radius:12px;background:#e8f5e9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-question-circle fs-5" style="color:var(--green);"></i>
+      </div>
+      <div><div class="fw-semibold">Help Centre</div><small class="text-muted">FAQs and platform guide</small></div>
+    </a>
+  </div>
+</div>
+{% endblock %}

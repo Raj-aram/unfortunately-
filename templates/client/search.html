@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Find an Advocate{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1 class="mb-1" style="font-size:1.5rem;"><i class="bi bi-search me-2"></i>Find an Advocate</h1>
+  <p>Search by court level or city to find the right lawyer for your case.</p>
+</div>
+
+<!-- Filter form -->
+<div class="card p-3 mb-4">
+  <form method="GET" action="{{ url_for('client_search') }}" class="row g-2 align-items-end">
+    <div class="col-12 col-md-4">
+      <label class="form-label fw-semibold mb-1">Court Level</label>
+      <select class="form-select" name="court">
+        <option value="">All Courts</option>
+        <option value="Supreme" {% if court == 'Supreme' %}selected{% endif %}>Supreme Court</option>
+        <option value="High"    {% if court == 'High'    %}selected{% endif %}>High Court</option>
+        <option value="District"{% if court == 'District'%}selected{% endif %}>District Court</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-4">
+      <label class="form-label fw-semibold mb-1">Location / City</label>
+      <input type="text" class="form-control" name="location"
+             value="{{ location }}" placeholder="e.g. Delhi, Mumbai"/>
+    </div>
+    <div class="col-6 col-md-2">
+      <button type="submit" class="btn btn-primary-custom w-100">
+        <i class="bi bi-search me-1"></i>Search
+      </button>
+    </div>
+    <div class="col-6 col-md-2">
+      <a href="{{ url_for('client_search') }}" class="btn btn-outline-secondary w-100">Clear</a>
+    </div>
+  </form>
+</div>
+
+<!-- Results -->
+{% if advocates %}
+<div class="section-title">{{ advocates|length }} Advocate{{ 's' if advocates|length != 1 }} Found</div>
+<div class="row g-3">
+  {% for adv in advocates %}
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="card adv-card p-3 h-100">
+      <div class="d-flex gap-3 align-items-center mb-2">
+        <div class="adv-avatar">{{ adv.name[0].upper() }}</div>
+        <div class="flex-grow-1">
+          <div class="adv-name">{{ adv.name }}</div>
+          <div class="adv-court">
+            {% for c in adv.court_level.split(',') %}
+              <span class="slot-pill" style="background:#e8edff;">{{ c.strip() }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="d-flex gap-2 align-items-center mb-2" style="font-size:.85rem;color:var(--muted);">
+        <i class="bi bi-geo-alt-fill text-gold"></i> {{ adv.location or 'Location N/A' }}
+      </div>
+      <div class="d-flex gap-2 align-items-center mb-3" style="font-size:.85rem;color:var(--muted);">
+        <i class="bi bi-currency-rupee text-gold"></i>
+        <strong class="text-navy">₹{{ '%.0f'|format(adv.fees) }}</strong> / consultation
+      </div>
+      {% if adv.bio %}
+      <p class="text-muted mb-3" style="font-size:.82rem;line-height:1.5;">{{ adv.bio[:120] }}{% if adv.bio|length > 120 %}…{% endif %}</p>
+      {% endif %}
+      <a href="{{ url_for('advocate_profile', adv_id=adv.id) }}"
+         class="btn btn-primary-custom w-100 mt-auto">
+        View Profile &amp; Book
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% elif court or location %}
+<div class="card text-center p-5">
+  <i class="bi bi-person-x fs-1 text-muted mb-3"></i>
+  <h5>No advocates found</h5>
+  <p class="text-muted">Try broadening your search filters.</p>
+  <a href="{{ url_for('client_search') }}" class="btn btn-primary-custom mx-auto" style="width:fit-content;">Show All</a>
+</div>
+
+{% else %}
+<div class="card text-center p-5">
+  <i class="bi bi-people fs-1 text-muted mb-3"></i>
+  <h5>Use the filters above to find advocates</h5>
+  <p class="text-muted">Search by court level, location, or both.</p>
+</div>
+{% endif %}
+{% endblock %}

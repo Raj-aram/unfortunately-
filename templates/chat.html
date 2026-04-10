@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Chat Room – Appointment #{{ appt.id }}{% endblock %}
+
+{% block content %}
+<div class="py-3">
+  <!-- Header bar -->
+  <div class="card p-3 mb-3 d-flex flex-row align-items-center gap-3 flex-wrap">
+    <div>
+      <a href="{% if session.role == 'client' %}{{ url_for('my_appointments') }}{% else %}{{ url_for('manage_appointments') }}{% endif %}"
+         class="text-muted text-decoration-none d-inline-flex align-items-center gap-1" style="font-size:.82rem;">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+    </div>
+    <div class="flex-grow-1">
+      <div class="fw-bold" style="font-size:1.05rem;">
+        <span class="online-dot"></span>
+        {% if session.role == 'client' %}{{ advocate_name }}{% else %}{{ client_name }}{% endif %}
+      </div>
+      <div class="text-muted" style="font-size:.8rem;">
+        Appointment #{{ appt.id }} &nbsp;·&nbsp; {{ appt.date }} at {{ appt.time }}
+      </div>
+    </div>
+    <div>
+      <span class="status-badge badge-online"><i class="bi bi-camera-video me-1"></i>Online Session</span>
+    </div>
+  </div>
+
+  <!-- Info banner -->
+  <div class="alert alert-info py-2 mb-3 d-flex gap-2 align-items-start" style="font-size:.82rem;">
+    <i class="bi bi-info-circle-fill mt-1 flex-shrink-0"></i>
+    <span>This is a secure chat room for your accepted appointment. Feel free to share contact details, documents, or case information here.</span>
+  </div>
+
+  <!-- Chat box -->
+  <div class="chat-wrapper shadow-sm">
+    <div class="chat-messages" id="chat-messages">
+      {% for m in messages %}
+      <div class="msg-bubble {{ 'mine' if m.sender_id == session.user_id else 'theirs' }}">
+        <div class="msg-inner">{{ m.message_text }}</div>
+        <div class="msg-meta">
+          {% if m.sender_id != session.user_id %}
+            <strong>{{ m.sender_name }}</strong> ·
+          {% endif %}
+          {{ m.timestamp[11:16] }}
+        </div>
+      </div>
+      {% endfor %}
+
+      {% if not messages %}
+      <div class="text-center text-muted py-5">
+        <i class="bi bi-chat-square-dots fs-2 d-block mb-2"></i>
+        No messages yet. Say hello!
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Input row -->
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" class="form-control"
+             placeholder="Type a message… (Enter to send)" autocomplete="off"/>
+      <button id="chat-send-btn" class="btn btn-primary-custom px-3" onclick="sendChatMessage()">
+        <i class="bi bi-send-fill"></i>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const APPT_ID = {{ appt.id }};
+  const USER_ID = {{ session.user_id }};
+  {% if messages %}
+  const LAST_TS = "{{ messages[-1].timestamp }}";
+  {% else %}
+  const LAST_TS = null;
+  {% endif %}
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initChat(APPT_ID, USER_ID, LAST_TS);
+  });
+</script>
+{% endblock %}

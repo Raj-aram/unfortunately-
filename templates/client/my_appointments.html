@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}My Appointments{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1 class="mb-1" style="font-size:1.5rem;"><i class="bi bi-calendar2-check me-2"></i>My Appointments</h1>
+  <p>Track your consultations, payments, and access online chat rooms.</p>
+</div>
+
+{% if appointments %}
+<!-- Desktop table — hidden on xs -->
+<div class="card d-none d-md-block">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Advocate</th>
+          <th>Date &amp; Time</th>
+          <th>Mode</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ a.advocate_name }}</div>
+            <small class="text-muted">{{ a.advocate_email }}</small>
+          </td>
+          <td>
+            <div>{{ a.date }}</div>
+            <small class="text-muted">{{ a.time }}</small>
+          </td>
+          <td>
+            <span class="status-badge {{ 'badge-online' if a.mode == 'Online' else 'badge-offline' }}">
+              <i class="bi {{ 'bi-camera-video' if a.mode == 'Online' else 'bi-building2' }} me-1"></i>
+              {{ a.mode }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge badge-{{ a.status.lower() }}">{{ a.status }}</span>
+          </td>
+          <td>
+            <span id="pay-status-{{ a.id }}" class="status-badge
+              {{ 'badge-paid' if a.payment_status == 'Paid' else 'badge-pending' }}">
+              {{ a.payment_status }}
+            </span>
+          </td>
+          <td>
+            <div class="d-flex gap-1 flex-wrap">
+              {% if a.status == 'Accepted' and a.payment_status == 'Pending' %}
+              <button class="btn btn-sm btn-gold"
+                      onclick="payFees({{ a.id }}, this)">
+                <i class="bi bi-credit-card me-1"></i>Pay
+              </button>
+              {% endif %}
+              {% if a.status == 'Accepted' and a.mode == 'Online' %}
+              <a href="{{ url_for('chat_room', appt_id=a.id) }}"
+                 class="btn btn-sm btn-primary-custom">
+                <i class="bi bi-chat-dots me-1"></i>Chat
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Mobile cards — visible on xs/sm -->
+<div class="d-md-none">
+  {% for a in appointments %}
+  <div class="card mb-3 p-3">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+      <div>
+        <div class="fw-semibold">{{ a.advocate_name }}</div>
+        <small class="text-muted">{{ a.advocate_email }}</small>
+      </div>
+      <span class="status-badge badge-{{ a.status.lower() }}">{{ a.status }}</span>
+    </div>
+    <div class="d-flex gap-3 mb-2" style="font-size:.83rem;color:var(--muted);">
+      <span><i class="bi bi-calendar3 me-1"></i>{{ a.date }}</span>
+      <span><i class="bi bi-clock me-1"></i>{{ a.time }}</span>
+    </div>
+    <div class="d-flex gap-2 align-items-center mb-3 flex-wrap">
+      <span class="status-badge {{ 'badge-online' if a.mode == 'Online' else 'badge-offline' }}">{{ a.mode }}</span>
+      <span id="pay-status-{{ a.id }}" class="status-badge {{ 'badge-paid' if a.payment_status == 'Paid' else 'badge-pending' }}">
+        {{ a.payment_status }}
+      </span>
+    </div>
+    <div class="d-flex gap-2">
+      {% if a.status == 'Accepted' and a.payment_status == 'Pending' %}
+      <button class="btn btn-sm btn-gold flex-grow-1" onclick="payFees({{ a.id }}, this)">
+        <i class="bi bi-credit-card me-1"></i>Pay Fees
+      </button>
+      {% endif %}
+      {% if a.status == 'Accepted' and a.mode == 'Online' %}
+      <a href="{{ url_for('chat_room', appt_id=a.id) }}" class="btn btn-sm btn-primary-custom flex-grow-1">
+        <i class="bi bi-chat-dots me-1"></i>Chat Room
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card text-center p-5">
+  <i class="bi bi-calendar-x fs-1 text-muted mb-3"></i>
+  <h5>No appointments yet</h5>
+  <p class="text-muted">Book a consultation with an advocate to get started.</p>
+  <a href="{{ url_for('client_search') }}" class="btn btn-primary-custom mx-auto" style="width:fit-content;">
+    <i class="bi bi-search me-1"></i> Find an Advocate
+  </a>
+</div>
+{% endif %}
+{% endblock %}
