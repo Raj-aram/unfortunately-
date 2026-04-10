@@ -571,10 +571,20 @@ def help_page():
 
 
 # ─────────────────────────────────────────────
-# ENTRY POINT
+# STARTUP  (module-level – runs on Vercel cold start AND local dev)
 # ─────────────────────────────────────────────
 
+def _startup():
+    if not DATABASE_URL:
+        print("[WARN] DATABASE_URL not set – skipping DB init.")
+        return
+    try:
+        init_db()
+        seed_advocate()
+    except Exception as exc:
+        print(f"[ERROR] Startup failed: {exc}")
+
+_startup()
+
 if __name__ == '__main__':
-    init_db()
-    seed_advocate()
     app.run(debug=True, port=5000)
